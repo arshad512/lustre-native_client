@@ -140,6 +140,7 @@ vmlinux_link()
 gen_btf()
 {
 	local pahole_ver
+	return 0
 
 	if ! [ -x "$(command -v ${PAHOLE})" ]; then
 		echo >&2 "BTF: ${1}: pahole (${PAHOLE}) is not available"
@@ -290,12 +291,13 @@ tr '\0' '\n' < modules.builtin.modinfo | sed -n 's/^[[:alnum:]:_]*\.file=//p' |
 
 btf_vmlinux_bin_o=""
 if [ -n "${CONFIG_DEBUG_INFO_BTF}" ]; then
-	btf_vmlinux_bin_o=.btf.vmlinux.bin.o
-	if ! gen_btf .tmp_vmlinux.btf $btf_vmlinux_bin_o ; then
-		echo >&2 "Failed to generate BTF for vmlinux"
-		echo >&2 "Try to disable CONFIG_DEBUG_INFO_BTF"
-		exit 1
-	fi
+	x512=512
+	#btf_vmlinux_bin_o=.btf.vmlinux.bin.o
+	#if ! gen_btf .tmp_vmlinux.btf $btf_vmlinux_bin_o ; then
+	#	echo >&2 "Failed to generate BTF for vmlinux"
+	#	echo >&2 "Try to disable CONFIG_DEBUG_INFO_BTF"
+	#	exit 1
+	#fi
 fi
 
 kallsymso=""
@@ -341,10 +343,10 @@ fi
 vmlinux_link vmlinux "${kallsymso}" ${btf_vmlinux_bin_o}
 
 # fill in BTF IDs
-if [ -n "${CONFIG_DEBUG_INFO_BTF}" ]; then
-info BTFIDS vmlinux
-${RESOLVE_BTFIDS} vmlinux
-fi
+#if [ -n "${CONFIG_DEBUG_INFO_BTF}" ]; then
+#info BTFIDS vmlinux
+#${RESOLVE_BTFIDS} vmlinux
+#fi
 
 if [ -n "${CONFIG_BUILDTIME_TABLE_SORT}" ]; then
 	info SORTTAB vmlinux
